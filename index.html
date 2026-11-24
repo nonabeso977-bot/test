@@ -16,7 +16,7 @@
 </style></head>
 <body><div class="app">
 <aside class="sidebar"><div class="brand"><div class="logo">✎</div><div><h1>مسوّدة</h1><p>مساحة هادئة للأفكار والسكربتات</p></div></div>
-<button class="new" id="newNote">＋ مسودة جديدة</button><input class="search" id="search" placeholder="ابحثي في العناوين والنصوص..." aria-label="بحث">
+<button class="new" id="newNote">＋ مسودة جديدة</button><input class="search" id="search" placeholder="البحث في العناوين والنصوص..." aria-label="بحث">
 <div><div class="section-label">المكتبة</div><div class="filters" id="filters">
 <button class="filter active" data-filter="all">كل المذكرات <span class="count" id="allCount">0</span></button><button class="filter" data-filter="script">السكربتات <span class="count" id="scriptCount">0</span></button><button class="filter" data-filter="idea">أفكار أولية <span class="count" id="ideaCount">0</span></button><button class="filter" data-filter="research">بحث ومصادر <span class="count" id="researchCount">0</span></button></div></div>
 <div class="side-bottom">مذكراتك تُحفظ تلقائيًا على هذا الجهاز والمتصفح.<br>لا حسابات، لا إعلانات، ولا مزاحمة على انتباهك.</div></aside>
@@ -25,9 +25,9 @@
 <section class="editor-panel"><div class="editor-head"><span class="section-label">مساحة التحرير</span><span class="save-state" id="saveState">جاهز</span></div>
 <input class="field title-field" id="noteTitle" placeholder="عنوان المذكرة..." maxlength="120">
 <div class="row-fields"><select class="field" id="noteType" aria-label="نوع المذكرة"><option value="script">سكربت</option><option value="idea">فكرة أولية</option><option value="research">بحث ومصادر</option></select><select class="field" id="noteStatus" aria-label="حالة المذكرة"><option value="draft">مسودة</option><option value="working">قيد العمل</option><option value="ready">جاهزة للتسجيل</option></select></div>
-<textarea class="editor" id="noteBody" placeholder="ابدئي من هنا...
+<textarea class="editor" id="noteBody" placeholder="مساحة الكتابة...
 
-للسكربتات الطويلة يمكنك استخدام هذا الترتيب:
+ترتيب مقترح للسكربتات الطويلة:
 • الافتتاحية / الخطّاف
 • الفكرة الرئيسية
 • المحاور والانتقالات
@@ -35,7 +35,7 @@
 • المعلومات التي تحتاج إلى تحقق
 • الخاتمة والسؤال الذي تتركينه للمشاهد
 
-اكتبي بطريقتك، واتركي المراجعة لمرحلة لاحقة."></textarea>
+تُكتب الأفكار بحرية، ويمكن تأجيل المراجعة إلى مرحلة لاحقة."></textarea>
 <div class="editor-footer"><span id="wordCount">0 كلمة</span><button class="danger" id="deleteNote">حذف المذكرة</button></div><div class="hint">تُحفظ التعديلات تلقائيًا. استخدمي «تنزيل المذكرة» للاحتفاظ بنسخة نصية خارج التطبيق.</div></section></section></main></div>
 <script>
 const KEY='maswada_script_notes_v1', $=id=>document.getElementById(id), typeNames={script:'سكربت',idea:'فكرة',research:'بحث'},statusNames={draft:'مسودة',working:'قيد العمل',ready:'جاهزة للتسجيل'};
@@ -45,10 +45,10 @@ function uid(){return 'n'+Date.now().toString(36)+Math.random().toString(36).sli
 function persist(){localStorage.setItem(KEY,JSON.stringify(notes));$('saveState').textContent='تم الحفظ تلقائيًا';renderList();renderCounts()}
 function current(){return notes.find(n=>n.id===selected)}
 function createNote(){const n={id:uid(),title:'مسودة جديدة',type:'script',status:'draft',body:'',updated:Date.now()};notes.unshift(n);selected=n.id;persist();loadEditor();$('noteTitle').focus()}
-function loadEditor(){const n=current(),disabled=!n;['noteTitle','noteType','noteStatus','noteBody','deleteNote','exportOne'].forEach(id=>$(id).disabled=disabled);if(!n){$('noteTitle').value='';$('noteType').value='script';$('noteStatus').value='draft';$('noteBody').value='';$('saveState').textContent='اختاري مذكرة أو أنشئي واحدة';$('wordCount').textContent='0 كلمة';return}$('noteTitle').value=n.title;$('noteType').value=n.type;$('noteStatus').value=n.status;$('noteBody').value=n.body;$('saveState').textContent='تم الحفظ';wordCount();renderList()}
+function loadEditor(){const n=current(),disabled=!n;['noteTitle','noteType','noteStatus','noteBody','deleteNote','exportOne'].forEach(id=>$(id).disabled=disabled);if(!n){$('noteTitle').value='';$('noteType').value='script';$('noteStatus').value='draft';$('noteBody').value='';$('saveState').textContent='اختر مذكرة أو أنشئ واحدة';$('wordCount').textContent='0 كلمة';return}$('noteTitle').value=n.title;$('noteType').value=n.type;$('noteStatus').value=n.status;$('noteBody').value=n.body;$('saveState').textContent='تم الحفظ';wordCount();renderList()}
 function wordCount(){const t=$('noteBody').value.trim(),count=t?t.split(/\s+/).length:0;$('wordCount').textContent=count+' كلمة · '+$('noteBody').value.length+' حرف'}
 function renderCounts(){$('allCount').textContent=notes.length;$('scriptCount').textContent=notes.filter(n=>n.type==='script').length;$('ideaCount').textContent=notes.filter(n=>n.type==='idea').length;$('researchCount').textContent=notes.filter(n=>n.type==='research').length}
-function renderList(){const list=notes.filter(n=>(filter==='all'||n.type===filter)&&(!query||(n.title+' '+n.body).toLowerCase().includes(query)));$('visibleCount').textContent=list.length+' مذكرة';$('notesList').innerHTML='';if(!list.length){$('notesList').innerHTML='<div class="empty"><div class="empty-icon">▤</div>لا توجد مذكرات هنا بعد.<br>ابدئي بمسودة جديدة.</div>';return}for(const n of list){const b=document.createElement('button');b.className='note-card'+(n.id===selected?' active':'');const title=document.createElement('h3');title.textContent=n.title||'بلا عنوان';const preview=document.createElement('p');preview.textContent=n.body||'لا يوجد نص بعد';const meta=document.createElement('div');meta.className='meta';const tag=document.createElement('span');tag.className='tag';tag.textContent=typeNames[n.type];const date=document.createElement('span');date.textContent=new Date(n.updated).toLocaleDateString('ar');meta.append(tag,date);b.append(title,preview,meta);b.onclick=()=>{selected=n.id;loadEditor()};$('notesList').append(b)}}
+function renderList(){const list=notes.filter(n=>(filter==='all'||n.type===filter)&&(!query||(n.title+' '+n.body).toLowerCase().includes(query)));$('visibleCount').textContent=list.length+' مذكرة';$('notesList').innerHTML='';if(!list.length){$('notesList').innerHTML='<div class="empty"><div class="empty-icon">▤</div>لا توجد مذكرات هنا بعد.<br>لا توجد مذكرات بعد. يمكن إنشاء مسودة جديدة.</div>';return}for(const n of list){const b=document.createElement('button');b.className='note-card'+(n.id===selected?' active':'');const title=document.createElement('h3');title.textContent=n.title||'بلا عنوان';const preview=document.createElement('p');preview.textContent=n.body||'لا يوجد نص بعد';const meta=document.createElement('div');meta.className='meta';const tag=document.createElement('span');tag.className='tag';tag.textContent=typeNames[n.type];const date=document.createElement('span');date.textContent=new Date(n.updated).toLocaleDateString('ar');meta.append(tag,date);b.append(title,preview,meta);b.onclick=()=>{selected=n.id;loadEditor()};$('notesList').append(b)}}
 function saveFromEditor(){const n=current();if(!n)return;n.title=$('noteTitle').value.trim()||'بلا عنوان';n.type=$('noteType').value;n.status=$('noteStatus').value;n.body=$('noteBody').value;n.updated=Date.now();wordCount();persist()}
 function download(name,text){const blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
 function safeName(s){return(s||'مذكرة').replace(/[\\/:*?"<>|]/g,'-').slice(0,70)}
